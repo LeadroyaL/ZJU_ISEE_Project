@@ -8,5 +8,5 @@ Please don't directly copy the code and cheat teacher!!!
   * cpp A* algorithms (no hints)
   * html mankind algorithms (coding)
 * 井字游戏 tik tak toe
-  * cpp minmax algorithms (coding)
+  * cpp minmax algorithms (no hints, memory leak)
   * html mankind algorithms (coding)
