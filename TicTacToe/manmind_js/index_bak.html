@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>井字游戏</title>
+    <style type="text/css">
+    img {width: 100px;height: 100px;}
+    /*body{background: #FF0000}*/
+    </style>
+  </head>
+
+  <!-- <body onreadystatechange="reset();"> -->
+  <body onload="initDOM()">
+      <div>
+      <table>
+      <tr>
+        <td>
+          <img src="blank.png" ondrag="return false"/>
+        </td>
+        <td>
+          <img src="blank.png" ondrag="return false"/>
+        </td>
+        <td>
+          <img src="blank.png" ondrag="return false"/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="blank.png" ondrag="return false"/>
+        </td>
+        <td>
+          <img src="blank.png" ondrag="return false"/>
+        </td>
+        <td>
+          <img src="blank.png" ondrag="return false"/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="blank.png" ondrag="return false"/>
+        </td>
+        <td>
+          <img src="blank.png" ondrag="return false"/>
+        </td>
+        <td>
+          <img src="blank.png" ondrag="return false"/>
+        </td>
+      </tr>
+    </table>
+    </div>
+    <button onclick="reset();"> reset</button>
+    <button onclick="AI();">AI random</button>
+    <script type="text/javascript">
+
+    //////here is a bug because no rotate
+
+    var player;
+    //true for 1 turn
+    var flag;
+    var picArray;
+    var numArray;
+    var chess_count;
+    var situation_x;
+    var situation_o;
+    var scope; // 0 1 3 2
+    var sum;
+
+    var rotate=[
+      [0,1,2,3,4,5,6,7,8],
+      [6,3,0,7,4,1,8,5,2],
+      [8,7,6,5,4,3,2,1,0],
+      [2,5,8,1,4,7,0,3,6]
+    ];
+    var rerotate=[
+      [0,1,2,3,4,5,6,7,8],
+      [8,7,6,5,4,3,2,1,0],
+      [6,3,0,7,4,1,8,5,2],
+      [2,5,8,1,4,7,0,3,6]
+    ];
+
+
+
+    // 1 from sight to logical, shun 90'
+    function initDOM() {
+      player = true;
+      flag = true;
+      picArray = document.getElementsByTagName('img');
+      numArray = [0,0,0,0,0,0,0,0,0];
+      for (var i = 0; i < picArray.length; i++) {
+        picArray[i].setAttribute("onclick","chess("+i+");");
+      }
+    }
+
+    function chess(i) {
+      if(flag){
+        if(!numArray[i]){
+          numArray[i] = player?1:-1;
+          picArray[i].src=player?"yes.png":"no.png";
+          player = !player;
+          chess_count ++ ;
+        }
+        flag = false;
+      sum = [0,0,0,0,0,0,0,0,0];
+      for (var i = 0; i < 3; i++) {
+        sum[0] += numArray[i+0];
+        sum[1] += numArray[i+3];
+        sum[2] += numArray[i+6];
+        sum[3] += numArray[3*i+0];
+        sum[4] += numArray[3*i+1];
+        sum[5] += numArray[3*i+2];
+        sum[6] += numArray[4*i];
+        sum[7] += numArray[2*i+2];
+      }
+        if(checkOwin())
+          alert("O win!");
+        else if (checkXwin())
+          alert("X win!");
+        else if(checkDone())
+          alert("Draw!");
+        else
+          flag = true;
+      }
+    }
+
+    function checkXwin() {
+      for(var i = 0 ; i < 9 ; i++)
+        if(sum[i] == 3) return true;
+      return false;
+    }
+
+    function checkOwin() {
+      for(var i = 0 ; i < 9 ; i++)
+        if(sum[i] == -3) return true;
+      return false;
+    }
+
+    function checkDone() {
+      for (var i in numArray) {
+        if(numArray[i]==0)
+          return false;
+      }
+      return true;
+    }
+
+    function reset() {
+        chess_count = 0;
+        player = true;
+        flag = true;
+        scope = 0;
+        numArray = [0,0,0,0,0,0,0,0,0];
+        for (var i = 0; i < picArray.length; i++) {
+          picArray[i].src = "blank.png";
+        }
+      }
+    // function chess(i) {
+    //   chess(rotate[scope][i]);
+    // }
+    function AI() {
+      var win_chess = AI_win();
+      switch (win_chess) {
+        case 0 : chess(0); chess(1); chess(2);return;
+        case 1 : chess(3); chess(4); chess(5);return;
+        case 2 : chess(6); chess(7); chess(8);return;
+        case 3 : chess(0); chess(3); chess(6);return;
+        case 4 : chess(1); chess(4); chess(7);return;
+        case 5 : chess(2); chess(5); chess(8);return;
+        case 6 : chess(0); chess(4); chess(8);return;
+        case 7 : chess(2); chess(4); chess(6);return;
+        // case 0 : chess(0); chess(1); chess(2);return;
+        // case 1 : chess(3); chess(4); chess(5);return;
+        // case 2 : chess(6); chess(7); chess(8);return;
+        // case 3 : chess(0); chess(3); chess(6);return;
+        // case 4 : chess(1); chess(4); chess(7);return;
+        // case 5 : chess(2); chess(5); chess(8);return;
+        // case 6 : chess(0); chess(4); chess(8);return;
+        // case 7 : chess(2); chess(4); chess(6);return;
+        default: ;
+      }
+      //just reverse player and resume player
+      player = !player;
+      var kill_chess = AI_win();
+      player = !player;
+      switch (kill_chess)
+      {
+        case 0 : chess(0); chess(1); chess(2);return;
+        case 1 : chess(3); chess(4); chess(5);return;
+        case 2 : chess(6); chess(7); chess(8);return;
+        case 3 : chess(0); chess(3); chess(6);return;
+        case 4 : chess(1); chess(4); chess(7);return;
+        case 5 : chess(2); chess(5); chess(8);return;
+        case 6 : chess(0); chess(4); chess(8);return;
+        case 7 : chess(2); chess(4); chess(6);return;
+        default:;
+      }
+      var KO = AI_ko();
+      if(KO!=9){
+        chess(KO);
+        return;
+      }
+      AI_others();
+    }
+
+    function AI_win() {
+        if(player)
+          for (var i in sum)
+            {if(sum[i] == 2) return parseInt(i);}
+        else
+          for (var i in sum)
+            {if(sum[i] == -2) return parseInt(i);}
+        return 9;
+    }
+
+    function AI_ko(){
+      if(player)
+      {
+        for(var i=0; i<3; i++)
+          for(var j=3; j<6; j++)
+            if(numArray[i]==2 && numArray[j] == 2)
+              return i+(j-3)*3;
+      }
+      else
+      {
+        for(var i=0; i<3; i++)
+          for(var j=3; j<6; j++)
+            if(numArray[i]==-2 && numArray[j] == -2)
+              return i+(j-3)*3;
+      }
+      return 9;
+    }
+
+    function AI_others() {
+      if(chess_count == 0){
+        chess(0);
+        situation_x = 0;
+        scope = 0;
+        return;
+      }
+
+      else if(chess_count == 1)
+        {
+          if(numArray[0] == 1){
+            scope = 0;
+            situation_o = 1; //corner
+          }
+          else if(numArray[2] == 1){
+            scope = 1;
+            situation_o = 1; //corner
+          }
+          else if(numArray[6] == 1){
+            scope = 3;
+            situation_o = 1; //corner
+          }
+          else if(numArray[8] == 1){
+            scope = 2;
+            situation_o = 1; //corner
+          }
+          else if(numArray[1] == 1){
+            scope = 0;
+            situation_o = 2; //side
+          }
+          else if(numArray[3] == 1){
+            scope = 3;
+            situation_o = 2; //side
+          }
+          else if(numArray[5] == 1){
+            scope = 1;
+            situation_o = 2; //side
+          }
+          else if(numArray[7] == 1){
+            scope = 2;
+            situation_o = 2; //side
+          }
+          else if(numArray[4] == 1){
+            scope = 0;
+            situation_o = 3; //center
+          }
+          else ;
+
+          if(numArray[4] == 0)
+            chess(4);
+          else
+            chess(0);
+          return;
+        }
+
+      else if(chess_count == 2) {
+        if(numArray[2] == -1 || numArray[4] == -1 || numArray[6] == -1)
+          chess(8);
+        else if (numArray[3] == -1)
+          chess(3);
+        else if(numArray[5] == -1 || numArray[7] == -1)
+          chess(5);
+        else if(numArray[1] == -1)
+          chess(7);
+        else
+          rand_chess();
+        return;
+      }
+
+      else if(chess_count == 4) {
+          rand_chess();
+          return;
+      }
+
+      else if(chess_count == 6) {
+        rand_chess();
+        return;
+      }
+
+      else if(chess_count == 8) {
+        rand_chess();
+        return;
+      }
+
+      else ;
+      switch (situation_o) {
+        case 1:
+            if(chess_count == 3){
+              if(numArray[8] == 0)
+                chess(8);
+              else
+                chess(1);
+            }
+            else if (chess_count == 5) {
+              if(numArray[8] == 0)
+                chess(8);
+              else
+                rand_chess();
+            }
+            else if (chess_count == 7) {
+                rand_chess();
+            }
+          break;
+        case 2:
+          if(chess_count == 3){
+            if(numArray[3] == 1)
+              chess(0);
+            else if(numArray[5] == 1)
+              chess(2);
+            else if(numArray[3] == 0)
+              chess(3);
+            else if(numArray[5] == 0)
+              chess(5)
+            else
+              rand_chess();
+            }
+          else if(chess_count == 5)
+            rand_chess();
+          else if(chess_count == 7)
+            rand_chess();
+          else ;
+          break;
+        case 3:
+          if(chess_count == 3){
+            if(numArray[4] == 0)
+              chess(4);
+            else if(numArray[6] == 0)
+              chess(6);
+            else
+              rand_chess();
+            }
+          else if(chess_count == 5){
+            if(numArray[8] == 0)
+              chess(8);
+            else if(numArray[6] == 0)
+              chess(6);
+            else if(numArray[4] == 0)
+              chess(4);
+            else
+              rand_chess();
+          }
+          else if(chess_count == 7)
+            rand_chess();
+          else ;
+          break;
+        default:;
+      }
+      return;
+    }
+
+    function rand_chess() {
+      while(true){
+      i = Math.round(Math.random()*8);
+      if(!numArray[i])
+        {
+          chess(i);
+          return
+        }
+      }
+    }
+
+    </script>
+  </body>
+</html>
