@@ -1,0 +1,140 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>入场画面</title>
+</head>
+
+<body>
+<script language="javascript">
+var startpos=new Array(9,9,9,9,9,0,0,0,9,0,0,0,9,0,0,0,9,9,9,9);
+var pos=new Array(9,9,9,9,9,0,0,0,9,0,0,0,9,0,0,0,9,9,9,9);
+var map = new Array(5,6,7,9,10,11,13,14,15);
+var eleArray = document.getElementsByTagName('img');
+a0=new Image();a0.src="a0.jpg";
+a1=new Image();a1.src="a1.jpg";
+a2=new Image();a2.src="a2.jpg";
+a3=new Image();a3.src="a3.jpg";
+a4=new Image();a4.src="a4.jpg";
+a5=new Image();a5.src="a5.jpg";
+a6=new Image();a6.src="a6.jpg";
+a7=new Image();a7.src="a7.jpg";
+a8=new Image();a8.src="a8.jpg";
+a9=new Image();a9.src="a9.jpg";
+var picArray = new Array(a0,a1,a2,a3,a4,a5,a6,a7,a8,a9);
+display(pos);
+
+//return location in pos of num-i
+function findNum(num) {
+	for (var i = 0; i < 9; i++) {
+			if((pos[map[i]]) == num)
+				return map[i];
+		}
+}
+
+function functionName() {
+	movNum1();
+	pos2 = findNum(2);
+	//movNum2(4)
+	pos3 = findNum(3);
+
+}
+
+function movNum1() {
+
+}
+
+// i = 0,1,2,3 --- four corner
+function rotate_p(i){
+	;
+}
+
+function rotate_n(){
+	;
+}
+
+function display(pos){
+	for (var i = 0; i < 9; i++) {
+		eleArray[i].src = picArray[pos[map[i]]].src;
+	}
+	win();
+}
+
+function move(num){
+	if(pos[num-4]==0) {pos[num-4]=pos[num];pos[num]=0;}
+	else if(pos[num-1]==0) {pos[num-1]=pos[num];pos[num]=0;}
+	else if(pos[num+1]==0) {pos[num+1]=pos[num];pos[num]=0;}
+	else if(pos[num+4]==0) {pos[num+4]=pos[num];pos[num]=0;}
+	else return false;
+	display(pos);
+}
+
+function movebf(num){
+	if(pos[num-4]==0) {pos[num-4]=pos[num];pos[num]=0;}
+	else if(pos[num-1]==0) {pos[num-1]=pos[num];pos[num]=0;}
+	else if(pos[num+1]==0) {pos[num+1]=pos[num];pos[num]=0;}
+	else if(pos[num+4]==0) {pos[num+4]=pos[num];pos[num]=0;}
+}
+
+
+function win(){
+	if(pos[5]==1&pos[6]==2&pos[7]==3&pos[9]==4&pos[10]==5&pos[11]==6&pos[13]==7&pos[14]==8&pos[15]==0)
+	alert("You Win!");
+}
+
+
+function newgame(){
+	var digital_array=new Array(1,2,3,4,5,6,7,8,0);
+	var ranlist=new Array(5,6,7,9,10,11,13,14,15);
+	var ran,ranno;
+	for(var i=1;i<20;i++)
+		pos[i]=startpos[i];
+
+	for(i=0;i<3;i++)
+		for(var j=0;j<3;j++){
+			var tpi=i*4+j+5;
+		 	var tpj=i*3+j;
+		 	pos[tpi]=digital_array[tpj];
+		}
+	for(i=0;i<1000;i++){
+		ranno=parseInt(Math.random()*9);
+		ran=ranlist[ranno];
+		movebf(ran);
+	}
+	display(pos);
+}
+
+// function glass()
+// {setTimeout("FM1.c9.src=a9hl.src;",2000);
+// setTimeout("FM1.c9.src=a9.src;",4000);}
+
+
+</script>
+
+<form name="form1" id="FM1">
+<table style="position:absolute left:0px"  cellspacing="0" cellpadding="0">
+<tr>
+<td><img src="a0.jpg" id="c1" onClick="move(5)" ondrag="return false"></td>
+<td><img src="a0.jpg" id="c2" onClick="move(6)" ondrag="return false"></td>
+<td><img src="a0.jpg" id="c3" onClick="move(7)" ondrag="return false"></td></tr>
+<tr>
+<td><img src="a0.jpg" id="c4" onClick="move(9)" ondrag="return false"></td>
+<td><img src="a0.jpg" id="c5" onClick="move(10)" ondrag="return false"></td>
+<td><img src="a0.jpg" id="c6" onClick="move(11)" ondrag="return false"></td></tr>
+<tr>
+<td><img src="a0.jpg" id="c7" onClick="move(13)" ondrag="return false"></td>
+<td><img src="a0.jpg" id="c8" onClick="move(14)" ondrag="return false"></td>
+<td><img src="a0.jpg" id="c9" onClick="move(15)" ondrag="return false"></td></tr>
+</table>
+</form>
+</tr></tr>
+<div id="tag" style="position:absolute;color:#00FF00;left:0%;top:0px;">
+<h5>移动路径显示在此处:(用来debug)</h5>
+</div>
+
+<form>
+<input type="button" value="开始" onClick="newgame()"; >
+<input type="button" value="跳过" onClick="skip()";>
+
+</form>
+</body>
+</html>

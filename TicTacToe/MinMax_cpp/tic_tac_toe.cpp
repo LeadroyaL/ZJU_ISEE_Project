@@ -11,32 +11,53 @@ using namespace std;
 	Your code starts here
 */
 
-void getAssumeState(TicTacToeState state, vector<Action> actions, vector<TicTacToeState>& finalState, int player);
-void H_MINIMAX(TicTacToeState currentState, int player, int depth, int& r, int& c);
+// -----announce some function -----
+
+/*
+input state, vector <Action>(empty vector is also ok, because after 9 chess, no action can do)
+input player
+output to finalState
+*/
+void getAssumeState(TicTacToeState state, vector<Action> actions, int player, vector<TicTacToeState>& finalState);
+
+/*
+input currentState
+output vector <Action>
+*/
 void getAvailableActions(TicTacToeState currentState, vector<Action>& actions);
+
+/*
+input state
+return evaluta value of this state
+-100/100 is dangerous, -50/50 is not safe, 0 is draw situdation
+*/
 int evaluate(TicTacToeState state);
+
+/*
+input vector <TicTacToe>state (maybe one state, maybe a series of states)
+input depth, player
+return min/max value of these states(or one state)
+*/
 int calc_V(vector<TicTacToeState> state, int depth, int player);
 
 void miniMaxSearchForTicTacToe(const TicTacToeState& currentState, int& r, int& c)
 {
-
 	vector<Action> actions;
 	vector<TicTacToeState> assum_state;
 	vector<TicTacToeState> tp_vector;
 	//get every action
 	getAvailableActions(currentState, actions);
-	getAssumeState(currentState, actions, assum_state,1);
-	//actions--->assume_state, pairs
+	getAssumeState(currentState, actions, 1, assum_state);
 	int very_action_index, very_value = -999;
-
+	// --!! Here we mannually do the first step assume_state!!--
+	// then we choose the best of them, return r,c, which is the final AI decision
 	for (int i = 0; i < assum_state.size(); i++)
 	{
-		//???? memory rubbish
-		tp_vector.clear();
+		//tp_vector.clear();
+		vector<TicTacToeState>().swap(tp_vector); 
 		tp_vector.push_back(assum_state[i]);
-		int tp = calc_V(tp_vector, 2, -1);
-		//tp always -50
-		//should be -100 0 -100 -100 -100 -100
+		int tp = calc_V(tp_vector, 2, -1); //calculate state value
+		// -- debug --
 		//cout << tp << "  ";
 		if (very_value < tp)
 		{
@@ -44,34 +65,35 @@ void miniMaxSearchForTicTacToe(const TicTacToeState& currentState, int& r, int& 
 			very_action_index = i;
 		}
 	}
+	// --- get final dicision ----
 	Action final_action = actions[actions.size() -1 - very_action_index];
-	very_value;
 	r = final_action.row;
 	c = final_action.col;
 }
 
 int calc_V(vector<TicTacToeState> state, int depth, int player) {
+
+	//vector 'very' is use to store evalute values
 	vector<int> very;
+	// when go to the leaf, return the min/max value
 	if (depth == 0)
 		for (int i = 0; i < state.size(); i++)
 			very.push_back(evaluate(state[i]));
+	// when not the leaf, go to the deeper state and do recursion
 	else {
 		vector<Action> actions;
 		vector<TicTacToeState> assum_state;
 		TicTacToeState tp_state;
-		// state is all want to judge condition
 
 		for (int i = 0; i < state.size(); i++)
 		{
-			//player
 			getAvailableActions(state[i], actions);
-			getAssumeState(state[i], actions, assum_state, player);
+			getAssumeState(state[i], actions, player, assum_state);
 			very.push_back(calc_V(assum_state, depth - 1, -player));
 		}
 	}
 
 	int r_value = very[0];
-	//reverse  12:04
 	if (player == -1) {
 		//return max
 		for (int ii = 0; ii < very.size(); ii++)
@@ -85,14 +107,13 @@ int calc_V(vector<TicTacToeState> state, int depth, int player) {
 				r_value = very[ii];
 	}
 	return r_value;
-
 }
 
 int evaluate(TicTacToeState state) {
-	//pre dealing
+	//propare dealing
 	int a[8] = { 0,0,0,0,0,0,0,0 };
 	int player = 0;
-	//012 for --  345 for ||  67forX
+	//012 for sum of rows  345 for sum for cols  67 for cross
 	for (int i = 0; i < 3; i++)
 	{
 		a[0] += state.state[0][i];
@@ -101,12 +122,6 @@ int evaluate(TicTacToeState state) {
 		a[3] += state.state[i][0];
 		a[4] += state.state[i][1];
 		a[5] += state.state[i][2];
-		//a[0] += state.state[i][0];
-		//a[1] += state.state[i][1];
-		//a[2] += state.state[i][2];
-		//a[3] += state.state[0][i];
-		//a[4] += state.state[1][i];
-		//a[5] += state.state[2][i];
 		a[6] += state.state[i][i];
 		a[7] += state.state[i][2 - i];
 	}
@@ -123,7 +138,7 @@ int evaluate(TicTacToeState state) {
 
 		//first kill then be kill then KO then be KO
 		if (player == -1)
-			//AI turn, -2 is very danger
+		//AI turn, -2 is very danger
 		{
 			for (int i = 0; i < 9; i++)
 				if (a[i] == 2) return 50;
@@ -180,12 +195,12 @@ int evaluate(TicTacToeState state) {
 				}
 			return 0;
 		}
-
-		return 0;
+	return 0;
 }
 
 void getAvailableActions(TicTacToeState currentState, vector<Action>& actions) {
-	actions.clear();
+	//actions.clear();
+	vector<Action>().swap(actions);
 	int chess_count = 0;
 	int a[8] = { 0,0,0,0,0,0,0,0 };
 	for (int i = 0; i < 3;i++)
@@ -210,11 +225,13 @@ void getAvailableActions(TicTacToeState currentState, vector<Action>& actions) {
 	}
 	for (int i = 0; i < 8; i++)
 		if (fabs(a[i]) == 3) {
-			actions.clear();
+			//actions.clear();
+			vector<Action>().swap(actions);
 			return;
 		}
 	if (chess_count==1){
-		actions.clear();
+		//actions.clear();
+		vector<Action>().swap(actions);
 		Action* _new = (Action*)malloc(sizeof(Action));
 		if (currentState.state[1][1] == 0)
 		{
@@ -226,30 +243,11 @@ void getAvailableActions(TicTacToeState currentState, vector<Action>& actions) {
 		actions.push_back(*_new);
 	}
 }
-void H_MINIMAX(TicTacToeState currentState, int player, int depth, int& r, int& c) {
-	vector<Action> actions;
-	if (depth == 0)
-		return;
-	else
-	{
-		depth--;
-		player = -player;
-		getAvailableActions(currentState, actions);
-		if(player==1)
-		{
-			//get MAX for AI
-						
-		}
-		else
-		{ 
-			//get MIN for human
-		}
-	}
-}
 
-void getAssumeState(TicTacToeState state, vector<Action> actions, vector<TicTacToeState>& finalState, int player)
+void getAssumeState(TicTacToeState state, vector<Action> actions, int player, vector<TicTacToeState>& finalState)
 {
-	finalState.clear();
+	//finalState.clear();
+	vector<TicTacToeState>().swap(finalState);
 	for (int i = actions.size() - 1; i >= 0; i--)
 	{
 		TicTacToeState* p = (TicTacToeState*)malloc(sizeof(TicTacToeState));
@@ -261,6 +259,7 @@ void getAssumeState(TicTacToeState state, vector<Action> actions, vector<TicTacT
 		p->state[actions[i].row][actions[i].col] = player;
 		finalState.push_back(*p);
 	}
+	//if no action, return itself
 	if (actions.size() == 0)
 	{
 		TicTacToeState* p = (TicTacToeState*)malloc(sizeof(TicTacToeState));
@@ -269,7 +268,6 @@ void getAssumeState(TicTacToeState state, vector<Action> actions, vector<TicTacT
 				p->state[j][k] = state.state[j][k];
 		finalState.push_back(*p);
 	}
-
 }
 
 // You do not need the following code and do not revise it.
@@ -373,7 +371,7 @@ void GameJudge::humanInput(int& r, int& c)
 	while(!succ)
 	{
 		cin >> str;
-		sscanf(str.c_str(), "%d,%d", &r, &c);
+		sscanf_s(str.c_str(), "%d,%d", &r, &c);
 		if (r < 0 || r > 2 || c < 0 || c > 2)
 		{
 			succ = false;

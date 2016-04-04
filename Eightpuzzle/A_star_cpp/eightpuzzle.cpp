@@ -27,6 +27,9 @@ NOTICE:
 	when you are playing 8 puzzle game.
 	Your code start here
 */
+
+
+//search h_value in matric version2 using rectangle distance
 int g_mat_v2[9][9] = {
 	{0,1,2,1,2,3,2,3,4},
 	{1,0,1,2,1,2,3,2,3},
@@ -38,6 +41,8 @@ int g_mat_v2[9][9] = {
 	{3,2,3,2,1,2,1,0,1},
 	{4,3,2,3,2,1,2,1,0}
 };
+
+//search h_value in matric version3 using absulute distance
 double g_mat_v3[9][9] = {
 	{ 0,1,2,1,1.414,2.236,2,2.236,2.828},
 	{ 1,0,1,1.414,1,1.414,2.236,2,2.236 },
@@ -49,38 +54,67 @@ double g_mat_v3[9][9] = {
 	{ 2.236,2,2.236,1.414,1,1.414,1,0,1 },
 	{ 2.828,2.236,2,2.236,1.414,1,2,1,0 }
 };
+
+//------ some global variable to avoid parameters --------
 EightPuzzleState* current;
 EightPuzzleState* startPos;
 EightPuzzleState* successors[4];
 
+//------annouce some function---------
+
+/*
+no input, (use global variable 'current')
+output vector <int> moves, which means solution route
+*/
+void reverse_moves(vector<int>& moves);
+
+/*
+input current_state
+output to global variable 'successors[0~3]' and malloc if neccessary
+return count of successors
+*/
+int getSuccessors(EightPuzzleState* current);
+
+/*
+input state, output h_value
+three ways to calculate h, in order to compare the speed of different h_calc
+finally we use version2
+*/
+int calc_h(EightPuzzleState* state);
+int calc_h_v2(EightPuzzleState* state);
+double calc_h_v3(EightPuzzleState* state);
+
+
+//------- !!the core function is here!!------------
 void AStarSearchFor8Puzzle(EightPuzzleState& iniState, vector<int>& moves)
 {
 	priority_queue<EightPuzzleState*, vector<EightPuzzleState*>, cmpLarge> openlist;
 	priority_queue<EightPuzzleState*, vector<EightPuzzleState*>, cmpLarge> store_openlist;
 	vector<EightPuzzleState*> closelist;
-	int success_count;
-	int loop_c = 0;
+	int success_count; //count for every w/a/s/d move which can success
+	int loop_c = 0;  //count for times of main_loop, for debug
 	openlist.push(&iniState);
 	startPos = &iniState;
-	void reverse_moves(vector<int>& moves);
+
 	while (!openlist.empty())
 	{
+		// ------ for debuging show------
 		loop_c++;
 		if (loop_c % 10 == 0)
-		cout << "next Round!" << loop_c << endl;
-		// get game state
+			cout << "next Round!" << loop_c << endl;
+
+		// -----checking finish
 		current = openlist.top();
-		//check success and return
 		if (checkFinalState(current)) {
-			////???????????? return the int moves[]
 			reverse_moves(moves);
 			cout << "Yeah!!Success!" << endl;
 			return;
 		}
 		openlist.pop();
 		closelist.push_back(current);
-		//annouce and create getSuccessors function
-		int getSuccessors(EightPuzzleState*);
+
+		//-----get successors------
+		// !!use free avoid memory leak!!
 		success_count = getSuccessors(current);
 		for (int i = 0; i < success_count; i++)
 		{
@@ -90,29 +124,26 @@ void AStarSearchFor8Puzzle(EightPuzzleState& iniState, vector<int>& moves)
 				if (closelist[j] == successors[i])
 				{
 					flag = false;
+					free(successors[i]);
 					break;
 				}
 			if (!flag) continue;
 
 			//whether in openlist
+			store_openlist = openlist;
 			flag = true;
-			while (!openlist.empty())
+			while (!store_openlist.empty())
 			{
 				EightPuzzleState* tp;
-				store_openlist.push(openlist.top());
-				tp = openlist.top();
-				openlist.pop();
+				tp = store_openlist.top();
+				store_openlist.pop();
 				if (tp->state == successors[i]->state)
 				{
 					flag = false;
 					break;
 				}
 			}
-			//resume openlist
-			while (!store_openlist.empty()) {
-				openlist.push(store_openlist.top());
-				store_openlist.pop();
-			}
+
 			//not in openlist
 			if (flag) {
 				openlist.push(successors[i]);
@@ -121,15 +152,15 @@ void AStarSearchFor8Puzzle(EightPuzzleState& iniState, vector<int>& moves)
 			else {
 				if (successors[i]->g <= current->g)
 					openlist.push(successors[i]);
+				else
+					free(successors[i]);
 			}
 		}
 	}
 }
 
 int getSuccessors(EightPuzzleState* current) {
-	int calc_h(EightPuzzleState* state);
-	int calc_h_v2(EightPuzzleState* state);
-	double calc_h_v3(EightPuzzleState* state);
+
 	int r_1, r_2, c_1, c_2;
 	int count = 0;
 	for (int i = 0; i < 4; i++)
@@ -183,17 +214,19 @@ double calc_h_v3(EightPuzzleState* state) {
 				value += g_mat_v2[state->state[j][k] - 1][j * 3 + k];
 	return value;
 }
+
+
 void reverse_moves(vector<int>& moves){
 	EightPuzzleState* p;
 	p = current;
 	while(*p!=*startPos)
 	{
 		moves.insert(moves.begin(), p->preMove);
-		//moves.push_back(p->preMove);
 		p = p->preState;
 	}
 	return;
 }
+
 // You may need the following code, but you may not revise it
 
 /* Play 8 puzzle game according to "moves" and translate state from "iniState" to  "resultState"

@@ -42,7 +42,7 @@ struct EightPuzzleState{
 // you don't need to care about this
 struct cmpLarge{
 	bool operator()(EightPuzzleState* a, EightPuzzleState* b){
-		return ((a->g + a->h) > (b->g + b->h));
+		return ((a->g + a->h) > (b->g + b->h)) ;
 	}
 };
 

@@ -5,8 +5,8 @@ Welcome friends join our project!
 Please don't directly copy the code and cheat teacher!!!
 
 * 八数码问题 EightPuzzle
-  * cpp A* algorithms (no hints)
+  * cpp A* algorithms (done!)
   * html mankind algorithms (fail)
-* 井字游戏 tik tak toe
-  * cpp minmax algorithms (no hints, memory leak)
-  * html mankind algorithms (no hints)
+* 井字游戏 tic-tac-toe
+  * cpp minmax algorithms (done!)
+  * html mankind algorithms (done!)

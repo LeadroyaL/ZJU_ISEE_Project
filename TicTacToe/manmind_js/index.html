@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -11,64 +11,64 @@
 
   <!-- <body onreadystatechange="reset();"> -->
   <body onload="initDOM()">
-      <div>
+    <div>
       <table>
-      <tr>
-        <td>
-          <img src="blank.png" ondrag="return false"/>
-        </td>
-        <td>
-          <img src="blank.png" ondrag="return false"/>
-        </td>
-        <td>
-          <img src="blank.png" ondrag="return false"/>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <img src="blank.png" ondrag="return false"/>
-        </td>
-        <td>
-          <img src="blank.png" ondrag="return false"/>
-        </td>
-        <td>
-          <img src="blank.png" ondrag="return false"/>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <img src="blank.png" ondrag="return false"/>
-        </td>
-        <td>
-          <img src="blank.png" ondrag="return false"/>
-        </td>
-        <td>
-          <img src="blank.png" ondrag="return false"/>
-        </td>
-      </tr>
-    </table>
+        <tr>
+          <td>
+            <img src="blank.png" ondrag="return false"/>
+          </td>
+          <td>
+            <img src="blank.png" ondrag="return false"/>
+          </td>
+          <td>
+            <img src="blank.png" ondrag="return false"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <img src="blank.png" ondrag="return false"/>
+          </td>
+          <td>
+            <img src="blank.png" ondrag="return false"/>
+          </td>
+          <td>
+            <img src="blank.png" ondrag="return false"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <img src="blank.png" ondrag="return false"/>
+          </td>
+          <td>
+            <img src="blank.png" ondrag="return false"/>
+          </td>
+          <td>
+            <img src="blank.png" ondrag="return false"/>
+          </td>
+        </tr>
+      </table>
     </div>
     <button onclick="reset();"> reset</button>
-    <button onclick="AI();">AI random</button>
+    <button onclick="AI();">AI chess</button>
     <script type="text/javascript">
 
     var player;
-    //true for 1 turn
-    var flag;
+    var flag; //judge whether game is going on
     var picArray;
     var numArray;
     var chess_count;
     var situation_x;
     var situation_o;
     var scope; // 0 1 3 2
+    // 1 from sight to logical, shun shi zhen 90°
     var sum;
-
     var rotate=[
       [0,1,2,3,4,5,6,7,8],
       [6,3,0,7,4,1,8,5,2],
       [8,7,6,5,4,3,2,1,0],
       [2,5,8,1,4,7,0,3,6]
     ];
+
     var rerotate=[
       [0,1,2,3,4,5,6,7,8],
       [8,7,6,5,4,3,2,1,0],
@@ -77,8 +77,6 @@
     ];
 
 
-
-    // 1 from sight to logical, shun 90'
     function initDOM() {
       player = true;
       flag = true;
@@ -87,67 +85,57 @@
       for (var i = 0; i < picArray.length; i++) {
         picArray[i].setAttribute("onclick","chess("+i+");");
       }
+      reset();
     }
 
-    function chess(i) {
+    // do chess on cell 0~8
+    function chess(i){
       if(flag){
-        if(!numArray[i]){
-          numArray[i] = player?1:-1;
-          picArray[i].src=player?"yes.png":"no.png";
-          player = !player;
-          chess_count ++ ;
-        }
+          if(!numArray[i]){
+            numArray[i] = player?1:-1;
+            picArray[i].src=player?"yes.png":"no.png";
+            player = !player;
+            chess_count ++ ;
+          }
         flag = false;
-      sum = [0,0,0,0,0,0,0,0,0];
-      for (var i = 0; i < 3; i++) {
-        sum[0] += numArray[rotate[scope][i+0]];
-        sum[1] += numArray[rotate[scope][i+3]];
-        sum[2] += numArray[rotate[scope][i+6]];
-        sum[3] += numArray[rotate[scope][3*i+0]];
-        sum[4] += numArray[rotate[scope][3*i+1]];
-        sum[5] += numArray[rotate[scope][3*i+2]];
-        sum[6] += numArray[rotate[scope][4*i]];
-        sum[7] += numArray[rotate[scope][2*i+2]];
+        sum = [0,0,0,0,0,0,0,0,0];
+        for (var i = 0; i < 3; i++) {
+          sum[0] += numArray[rotate[scope][i+0]];
+          sum[1] += numArray[rotate[scope][i+3]];
+          sum[2] += numArray[rotate[scope][i+6]];
+          sum[3] += numArray[rotate[scope][3*i+0]];
+          sum[4] += numArray[rotate[scope][3*i+1]];
+          sum[5] += numArray[rotate[scope][3*i+2]];
+          sum[6] += numArray[rotate[scope][4*i]];
+          sum[7] += numArray[rotate[scope][2*i+2]];
+        }
+          if(checkOwin())
+            alert("O win!");
+          else if (checkXwin())
+            alert("X win!");
+          else if(checkDone())
+            alert("Draw!");
+          else
+            flag = true;
       }
-        if(checkOwin())
-          alert("O win!");
-        else if (checkXwin())
-          alert("X win!");
-        else if(checkDone())
-          alert("Draw!");
-        else
-          flag = true;
-      }
+      else ;
     }
 
+    // check X win
     function checkXwin() {
-      // if(numArray[0]+numArray[1]+numArray[2]==3) return true;
-      // if(numArray[3]+numArray[4]+numArray[5]==3) return true;
-      // if(numArray[6]+numArray[7]+numArray[8]==3) return true;
-      // if(numArray[0]+numArray[3]+numArray[6]==3) return true;
-      // if(numArray[1]+numArray[4]+numArray[7]==3) return true;
-      // if(numArray[2]+numArray[5]+numArray[8]==3) return true;
-      // if(numArray[0]+numArray[4]+numArray[8]==3) return true;
-      // if(numArray[2]+numArray[4]+numArray[6]==3) return true;
       for(var i = 0 ; i < 9 ; i++)
         if(sum[i] == 3) return true;
       return false;
     }
 
+    //check O win
     function checkOwin() {
-      // if(numArray[0]+numArray[1]+numArray[2]==-3) return true;
-      // if(numArray[3]+numArray[4]+numArray[5]==-3) return true;
-      // if(numArray[6]+numArray[7]+numArray[8]==-3) return true;
-      // if(numArray[0]+numArray[3]+numArray[6]==-3) return true;
-      // if(numArray[1]+numArray[4]+numArray[7]==-3) return true;
-      // if(numArray[2]+numArray[5]+numArray[8]==-3) return true;
-      // if(numArray[0]+numArray[4]+numArray[8]==-3) return true;
-      // if(numArray[2]+numArray[4]+numArray[6]==-3) return true;
       for(var i = 0 ; i < 9 ; i++)
         if(sum[i] == -3) return true;
       return false;
     }
 
+    //check game finish
     function checkDone() {
       for (var i in numArray) {
         if(numArray[rotate[scope][i]]==0)
@@ -156,6 +144,7 @@
       return true;
     }
 
+    //reset
     function reset() {
         chess_count = 0;
         player = true;
@@ -166,10 +155,17 @@
           picArray[i].src = "blank.png";
         }
       }
+
+    //in this model, we consider four situcations, one is AI first, three are human first
+    //if human chess on pos[2,4,5,6,7], AI must use a mask to rorate the chess board, so here is a chess_scope for AI
     function chess_scope(i) {
       chess(rotate[scope][i]);
     }
+
+    //-----!!!!***Attention***!!!!!-------
+    // ------!!! It's the core AI function!!!------
     function AI() {
+      //chess kill
       var win_chess = AI_win();
       switch (win_chess) {
         case 0 : chess_scope(0); chess_scope(1); chess_scope(2);return;
@@ -180,18 +176,11 @@
         case 5 : chess_scope(2); chess_scope(5); chess_scope(8);return;
         case 6 : chess_scope(0); chess_scope(4); chess_scope(8);return;
         case 7 : chess_scope(2); chess_scope(4); chess_scope(6);return;
-        // case 0 : chess(0); chess(1); chess(2);return;
-        // case 1 : chess(3); chess(4); chess(5);return;
-        // case 2 : chess(6); chess(7); chess(8);return;
-        // case 3 : chess(0); chess(3); chess(6);return;
-        // case 4 : chess(1); chess(4); chess(7);return;
-        // case 5 : chess(2); chess(5); chess(8);return;
-        // case 6 : chess(0); chess(4); chess(8);return;
-        // case 7 : chess(2); chess(4); chess(6);return;
         default: ;
       }
-      //just reverse player and resume player
+      //reverse player and resume player
       player = !player;
+      //chess be kill
       var kill_chess = AI_win();
       player = !player;
       switch (kill_chess)
@@ -207,10 +196,13 @@
         default:;
       }
       var KO = AI_ko();
+      //chess KO
+      //!!here we don't need to chess be KO, because in our aggressive AI, no be KO situation!!
       if(KO!=9){
         chess_scope(KO);
         return;
       }
+      //other situations
       AI_others();
     }
 
@@ -243,13 +235,15 @@
     }
 
     function AI_others() {
+      // AI first chess, and set situation_x and scope
       if(chess_count == 0){
         chess(0);
         situation_x = 0;
         scope = 0;
         return;
       }
-
+      //human first chess, and set situation_o and scope
+      // situation_o 0/1/2 measn corner/side/center
       else if(chess_count == 1)
         {
           if(numArray[rotate[scope][0]] == 1){
@@ -353,8 +347,6 @@
               chess_scope(2);
             else if(numArray[rotate[scope][3]] == 0)
               chess_scope(3);
-            else if(numArray[rotate[scope][5]] == 0)
-              chess_scope(5)
             else
               rand_chess();
             }
@@ -366,21 +358,12 @@
           break;
         case 3:
           if(chess_count == 3){
-            if(numArray[rotate[scope][4]] == 0)
-              chess_scope(4);
-            else if(numArray[rotate[scope][6]] == 0)
+            if(numArray[rotate[scope][6]] == 0)
               chess_scope(6);
             else
               rand_chess();
             }
           else if(chess_count == 5){
-            if(numArray[rotate[scope][8]] == 0)
-              chess_scope(8);
-            else if(numArray[rotate[scope][6]] == 0)
-              chess_scope(6);
-            else if(numArray[rotate[scope][4]] == 0)
-              chess_scope(4);
-            else
               rand_chess();
           }
           else if(chess_count == 7)
@@ -392,6 +375,7 @@
       return;
     }
 
+    //do a random chess, normally when AI thought it's a draw situation
     function rand_chess() {
       while(true){
       i = Math.round(Math.random()*8);
