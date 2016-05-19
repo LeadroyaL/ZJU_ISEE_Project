@@ -1,9 +1,11 @@
-###2016春夏学期人工智能的project，希望大家能够喜欢
-####2016 Spring Term AI project, hope can help you!
+###2016春夏学期一些课程的project，希望大家能够喜欢
+####2016 Spring Term project, hope can help you!
 
-Welcome friends join our project!
+Welcome friends to join our project!
 Please don't directly copy the code and cheat teacher!!!
 
+---
+人工智能
 * 八数码问题 EightPuzzle
   * cpp A* algorithms (done!)
   * html mankind algorithms (fail)
@@ -11,4 +13,13 @@ Please don't directly copy the code and cheat teacher!!!
   * cpp minmax algorithms (done!)
   * html mankind algorithms (done!)
 * 粒子滤波追踪算法 ParticleTracing
-  * matlab (codeing)
+  * matlab (done!)
+* 大作业 一笔画
+  *java algorithms
+  *android UI
+---
+密码学与网络基础
+ *AES
+  * cpp(coding)
+ *RSA
+  * cpp(coding)
