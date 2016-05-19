@@ -15,13 +15,13 @@ Please don't directly copy the code and cheat teacher!!!
 * 粒子滤波追踪算法 ParticleTracing
   * matlab (done!)
 * 大作业 一笔画
-  *java algorithms
-  *android UI
+  *java algorithms (done)
+  *android UI (coding)
 
 ---
 
 密码学与网络基础
-*AES
+* AES
   * cpp(coding)
-*RSA
+* RSA
   * cpp(coding)
