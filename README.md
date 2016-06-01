@@ -15,13 +15,15 @@ Please don't directly copy the code and cheat teacher!!!
 * 粒子滤波追踪算法 ParticleTracing
   * matlab (done!)
 * 大作业 一笔画
-  * java algorithms (done)
+  * java algorithms (done!)
   * android UI (coding)
-
+* 手写数字识别 NumberRecognition
+  * Naive Bayes Classify matlab (done!)
+  * LBP-SVM Classify matlab (very slow)
 ---
 
 密码学与网络基础
-* AES
-  * cpp(coding)
-* RSA
-  * cpp(coding)
+* AES和CMAC
+  * cpp powered by openssl(coding)
+* RSA和HMAC
+  * cpp powered by openssl(coding)
